@@ -12,25 +12,39 @@ datasource db {
 }
 
 model User {
-  id            Int     @id @default(autoincrement()) //uuid()
-  name          String
-  email         String
-  isAdmin       Boolean
+  id             Int             @id @default(autoincrement()) //uuid()
+  name           String
+  email          String
+  isAdmin        Boolean
   // largeNumber BigInt
-  preferences   Json?
-  blob          Bytes
+  // preferences   Json?
+  blob           Bytes
   // rawShit        Unsupported("")
-  writtenPosts  Post[]  @relation("WrittenPosts")
-  favoritePosts Post[]  @relation("FavoritePosts")
+  writtenPosts   Post[]          @relation("WrittenPosts")
+  favoritePosts  Post[]          @relation("FavoritePosts")
+  userPreference UserPreference?
+}
+
+model UserPreference {
+  id           String  @id @default(uuid())
+  emailUpdates Boolean
+  user         User    @relation(fields: [userId], references: [id])
+  userId       Int     @unique
 }
 
 model Post {
-  id            String   @id @default(uuid())
+  id            String     @id @default(uuid())
   rating        Float
   createdAt     DateTime
   updateAt      DateTime
-  author        User     @relation("WrittenPosts", fields: [userId], references: [id])
+  author        User       @relation("WrittenPosts", fields: [userId], references: [id])
   userId        Int
-  favoritedBy   User?    @relation("FavoritePosts", fields: [favoritedById], references: [id])
+  favoritedBy   User?      @relation("FavoritePosts", fields: [favoritedById], references: [id])
   favoritedById Int?
+  categories    Category[]
+}
+
+model Category {
+  id   String @id @default(uuid())
+  post Post[]
 }
